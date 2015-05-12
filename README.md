@@ -5,7 +5,7 @@
 Please refer to [Chosen](http://harvesthq.github.io/chosen/)'s API. It's pretty much the same, except:
 - Every Chosen option employs camelCase, e.g. disable_search_threshold -> disableSearchThreshold.
 
-### Usage: 
+## Usage: 
 
 #### Options data:
 ``` coffee
