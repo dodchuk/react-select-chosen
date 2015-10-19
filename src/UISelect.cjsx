@@ -18,7 +18,7 @@
     @forceUpdate()
 
   componentWillReceiveProps: (newProps) ->
-    if newProps.value isnt @state.selected
+    if newProps.value and newProps.value isnt @state.selected
       @setState { selected: newProps.value }
 
   renderOption: (option) ->
