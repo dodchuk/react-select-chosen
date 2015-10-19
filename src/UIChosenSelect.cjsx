@@ -3,7 +3,11 @@
     options: React.PropTypes.array
 
   getInitialState: ->
-    selected: @props.value || []
+    selected: []
+
+  componentWillMount: ->
+    @setState
+      selected: @props.value
 
   componentDidUpdate: ->
     # chosen doesn't refresh the options by itself, babysit it
@@ -19,33 +23,35 @@
       if options[i].selected
         selectedOptions.push options[i].value
 
+    @setState
+      selected: selectedOptions
+
     @props.onChange(e) if @props.onChange
-    @setState { selected: selectedOptions }
     @forceUpdate()
 
   componentWillReceiveProps: (newProps) ->
     if newProps.value and newProps.value isnt @state.selected
-      @setState { selected: newProps.value }
+      @setState
+        selected: newProps.value
 
   componentDidMount: ->
-    props = @props
-    select = $(React.findDOMNode(@refs.select))
+    select = React.findDOMNode(@refs.select)
 
     $(select).chosen(
-      allow_single_deselect: props.allowSingleDeselect
-      disable_search: props.disableSearch
-      disable_search_threshold: props.disableSearchThreshold
-      enable_split_word_search: props.enableSplitWordSearch
-      inherit_select_classes: props.inheritSelectClasses
-      max_selected_options: props.maxSelectedOptions
-      no_results_text: props.noResultsText
-      placeholder_text_multiple: props.placeholderTextMultiple
-      placeholder_text_single: props.placeholderTextSingle
-      search_contains: props.searchContains
-      single_backstroke_delete: props.singleBackstrokeDelete
-      width: props.width
-      display_disabled_options: props.displayDisabledOptions
-      display_selected_options: props.displaySelectedOptions)
+      allow_single_deselect: @props.allowSingleDeselect
+      disable_search: @props.disableSearch
+      disable_search_threshold: @props.disableSearchThreshold
+      enable_split_word_search: @props.enableSplitWordSearch
+      inherit_select_classes: @props.inheritSelectClasses
+      max_selected_options: @props.maxSelectedOptions
+      no_results_text: @props.noResultsText
+      placeholder_text_multiple: @props.placeholderTextMultiple
+      placeholder_text_single: @props.placeholderTextSingle
+      search_contains: @props.searchContains
+      single_backstroke_delete: @props.singleBackstrokeDelete
+      width: @props.width
+      display_disabled_options: @props.displayDisabledOptions
+      display_selected_options: @props.displaySelectedOptions)
       .on('chosen:maxselected', @props.onMaxSelected)
       .change @handleChange
 
@@ -54,24 +60,24 @@
     $(React.findDOMNode(@refs.select)).remove()
 
   renderOption: (option) ->
-    <option key={option.value} value={option.value}>{option.label}</option>
+    <option key={ option.value } value={ option.value }>{ option.label }</option>
 
   renderSelectOptions: ->
     if @props.options
       ops = @props.options.map (option) =>
         if option.type == 'group'
-          <optgroup label={option.name}>
+          <optgroup label={ option.name }>
             {
-              option.items.map((item) =>
-                @renderOption(item))
+              option.items.map (item) =>
+                @renderOption(item)
             }
           </optgroup>
         else
-          @renderOption option
+          @renderOption(option)
 
   render: ->
     selectProps = $.extend({}, @props, ref: 'select')
-    <select {...selectProps} value={@state.selected}>
-      {@props.children}
-      {@renderSelectOptions()}
+    <select {...selectProps} value={ @state.selected }>
+      { @props.children }
+      { @renderSelectOptions() }
     </select>

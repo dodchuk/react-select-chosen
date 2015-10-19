@@ -3,7 +3,11 @@
     options: React.PropTypes.array
 
   getInitialState: ->
-    selected: @props.value || []
+    selected: []
+
+  componentWillMount: ->
+    @setState
+      selected: @props.value
 
   handleChange: (e) ->
     options = e.target.options
@@ -13,33 +17,36 @@
       if options[i].selected
         selectedOptions.push options[i].value
 
+    @setState
+      selected: selectedOptions
+
     @props.onChange(e) if @props.onChange
-    @setState { selected: selectedOptions }
     @forceUpdate()
 
   componentWillReceiveProps: (newProps) ->
     if newProps.value and newProps.value isnt @state.selected
-      @setState { selected: newProps.value }
+      @setState
+        selected: newProps.value
 
   renderOption: (option) ->
-    <option key={option.value} value={option.value}>{option.label}</option>
+    <option key={ option.value } value={ option.value }>{ option.label }</option>
 
   renderSelectOptions: ->
     if @props.options
       ops = @props.options.map (option) =>
         if option.type == 'group'
-          <optgroup label={option.name}>
+          <optgroup label={ option.name }>
             {
-              option.items.map((item) =>
-                @renderOption(item))
+              option.items.map (item) =>
+                @renderOption(item)
             }
           </optgroup>
         else
-          @renderOption option
+          @renderOption(option)
 
   render: ->
     selectProps = $.extend({}, @props, ref: 'select')
-    <select {...selectProps} value={@state.selected} onChange=@handleChange>
-      {@props.children}
-      {@renderSelectOptions()}
+    <select {...selectProps} value={ @state.selected } onChange=@handleChange>
+      { @props.children }
+      { @renderSelectOptions() }
     </select>
